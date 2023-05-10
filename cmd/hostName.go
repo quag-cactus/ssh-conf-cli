@@ -9,9 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// editCmd represents the edit command
-var editCmd = &cobra.Command{
-	Use:   "edit",
+// hostNameCmd represents the hostName command
+var hostNameCmd = &cobra.Command{
+	Use:   "hostName",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -20,14 +20,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("edit called")
+		targetPattern, err := cmd.Flags().GetString("target-pattern")
+		if err != nil {
+		}
+		hostName, err := cmd.Flags().GetString("hostname")
+		if err != nil {
+		}
+
+		fmt.Println("hostName called", targetPattern, hostName)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(editCmd)
-
-	editCmd.PersistentFlags().StringP("target-pattern", "T", "", "Target pattern of Host")
-
-	editCmd.MarkPersistentFlagRequired("target-pattern")
+	editCmd.AddCommand(hostNameCmd)
+	hostNameCmd.Flags().StringP("hostname", "n", "", "Host name (ip address) for rewriting config")
 }
