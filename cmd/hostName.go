@@ -5,7 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/kevinburke/ssh_config"
+	"github.com/quag-cactus/ssh-conf-cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +23,10 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		filePath, err := cmd.Flags().GetString("file")
+		if err != nil {
+		}
 		targetPattern, err := cmd.Flags().GetString("target-pattern")
 		if err != nil {
 		}
@@ -27,7 +34,30 @@ to quickly create a Cobra application.`,
 		if err != nil {
 		}
 
-		fmt.Println("hostName called", targetPattern, hostName)
+		// If filePath is empty, set default config path based on runntime.OS
+		if filePath == "" {
+			filePath = utils.DefineDefaultConfigPath()
+		}
+
+		backupFilePath, err := utils.CreateBackupConfigFile(filePath)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("Failed to create backup file", backupFilePath)
+			return
+		}
+
+		inputFs, err := os.Open(filePath)
+		inputFs.Seek(0, 0)
+		cfg, _ := ssh_config.Decode(inputFs)
+		inputFs.Close()
+
+		for _, host := range cfg.Hosts {
+			fmt.Println("patterns:", host.Patterns)
+		}
+
+		fmt.Println(filePath)
+
+		fmt.Println("hostName called", filePath, targetPattern, hostName)
 	},
 }
 
