@@ -8,8 +8,10 @@ import (
 	"os"
 
 	"github.com/kevinburke/ssh_config"
-	"github.com/quag-cactus/ssh-conf-cli/utils"
 	"github.com/spf13/cobra"
+
+	"github.com/quag-cactus/ssh-conf-cli/proc"
+	"github.com/quag-cactus/ssh-conf-cli/utils"
 )
 
 // hostNameCmd represents the hostName command
@@ -55,7 +57,13 @@ to quickly create a Cobra application.`,
 			fmt.Println("patterns:", host.Patterns)
 		}
 
-		fmt.Println(filePath)
+		//xList, x, _ := proc.TestEdit()
+		resultList, err := proc.RewriteConfigValue(cfg, targetPattern, "HostName", hostName)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(resultList)
 
 		fmt.Println("hostName called", filePath, targetPattern, hostName)
 	},
