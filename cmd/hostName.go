@@ -41,6 +41,7 @@ to quickly create a Cobra application.`,
 			filePath = utils.DefineDefaultConfigPath()
 		}
 
+		// Create backup file
 		backupFilePath, err := utils.CreateBackupConfigFile(filePath)
 		if err != nil {
 			fmt.Println(err)
@@ -64,6 +65,11 @@ to quickly create a Cobra application.`,
 			return
 		}
 		fmt.Println(resultList)
+
+		// if resultList is not empty, write to file
+		if len(resultList) > 0 {
+			utils.WriteConfigFile(filePath, cfg.String())
+		}
 
 		fmt.Println("hostName called", filePath, targetPattern, hostName)
 	},

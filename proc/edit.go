@@ -7,6 +7,12 @@ import (
 	"github.com/kevinburke/ssh_config"
 )
 
+type EditResult struct {
+	previousValue string
+	currentValue  string
+	lineno        int
+}
+
 func TestEdit() ([]string, bool, error) {
 	fmt.Println("testedit called")
 
@@ -15,14 +21,15 @@ func TestEdit() ([]string, bool, error) {
 	return returnList, true, nil
 }
 
-func RewriteConfigValue(cfg *ssh_config.Config, targetPtn string, targetKeyName string, inputValue string) ([]ssh_config.Host, error) {
+func RewriteConfigValue(cfg *ssh_config.Config, targetPtn string, targetKeyName string, inputValue string) ([]EditResult, error) {
 
-	completedHostList := []ssh_config.Host{}
+	completedHostList := []EditResult{}
 
 	// Match HostName
-	isContainedWildCard := false
 
 	for _, host := range cfg.Hosts {
+
+		isContainedWildCard := false
 
 		if host.Matches(targetPtn) {
 			// A wildCard is not supported
@@ -34,18 +41,16 @@ func RewriteConfigValue(cfg *ssh_config.Config, targetPtn string, targetKeyName 
 			}
 
 			// rewriting
-
 			if !isContainedWildCard {
 				for _, node := range host.Nodes {
 
 					kv, ok := node.(*ssh_config.KV)
-
 					if ok && kv.Key == targetKeyName {
 						previousHostName := kv.Value
 						kv.Value = inputValue
-						//kv.Comment = "This value was rewritten automatically"
-						fmt.Printf("Hostname rewrited: %s -> %s (ln: %d)\n",
-							previousHostName, kv.Value, kv.Pos().Line)
+						completedHostList = append(completedHostList, EditResult{previousHostName, kv.Value, kv.Pos().Line})
+						kv.Comment = "This value was rewritten by ssh-conf-cli"
+						// fmt.Printf("Hostname rewrited: %s -> %s (ln: %d)\n", previousHostName, kv.Value, kv.Pos().Line)
 
 						break
 					}

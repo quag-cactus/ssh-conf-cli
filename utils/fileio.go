@@ -43,3 +43,12 @@ func CreateBackupConfigFile(filePath string) (string, error) {
 	return backupFilePath, nil
 
 }
+
+func WriteConfigFile(filePath string, data string) error {
+	err := os.WriteFile(filePath, []byte(data), 0644)
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
