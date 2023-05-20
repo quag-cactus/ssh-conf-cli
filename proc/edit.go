@@ -8,9 +8,10 @@ import (
 )
 
 type EditResult struct {
-	previousValue string
-	currentValue  string
-	lineno        int
+	HostPatterns  []string
+	PreviousValue string
+	CurrentValue  string
+	LineNo        int
 }
 
 func TestEdit() ([]string, bool, error) {
@@ -25,8 +26,7 @@ func RewriteConfigValue(cfg *ssh_config.Config, targetPtn string, targetKeyName 
 
 	completedHostList := []EditResult{}
 
-	// Match HostName
-
+	// HostName Matching
 	for _, host := range cfg.Hosts {
 
 		isContainedWildCard := false
@@ -40,17 +40,23 @@ func RewriteConfigValue(cfg *ssh_config.Config, targetPtn string, targetKeyName 
 				}
 			}
 
-			// rewriting
 			if !isContainedWildCard {
 				for _, node := range host.Nodes {
 
 					kv, ok := node.(*ssh_config.KV)
 					if ok && kv.Key == targetKeyName {
+
+						// rewriting
 						previousHostName := kv.Value
 						kv.Value = inputValue
-						completedHostList = append(completedHostList, EditResult{previousHostName, kv.Value, kv.Pos().Line})
 						kv.Comment = "This value was rewritten by ssh-conf-cli"
-						// fmt.Printf("Hostname rewrited: %s -> %s (ln: %d)\n", previousHostName, kv.Value, kv.Pos().Line)
+
+						// add result-info to list
+						editResult := EditResult{[]string{}, previousHostName, kv.Value, kv.Pos().Line}
+						for _, ptn := range host.Patterns {
+							editResult.HostPatterns = append(editResult.HostPatterns, ptn.String())
+						}
+						completedHostList = append(completedHostList, editResult)
 
 						break
 					}

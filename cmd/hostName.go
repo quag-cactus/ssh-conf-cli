@@ -26,6 +26,8 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		fmt.Println("HostName rewriting...")
+
 		filePath, err := cmd.Flags().GetString("file")
 		if err != nil {
 		}
@@ -39,6 +41,9 @@ to quickly create a Cobra application.`,
 		// If filePath is empty, set default config path based on runntime.OS
 		if filePath == "" {
 			filePath = utils.DefineDefaultConfigPath()
+			fmt.Printf("Config file path has been automatically defined: %s\n", filePath)
+		} else {
+			fmt.Printf("Config file path has been designated: %s\n", filePath)
 		}
 
 		// Create backup file
@@ -47,35 +52,40 @@ to quickly create a Cobra application.`,
 			fmt.Println(err)
 			fmt.Println("Failed to create backup file", backupFilePath)
 			return
+		} else {
+			fmt.Println("Backup file has been created: ", backupFilePath)
 		}
 
 		inputFs, err := os.Open(filePath)
 		inputFs.Seek(0, 0)
-		cfg, _ := ssh_config.Decode(inputFs)
+		cfg, err := ssh_config.Decode(inputFs)
 		inputFs.Close()
 
-		for _, host := range cfg.Hosts {
-			fmt.Println("patterns:", host.Patterns)
-		}
-
-		//xList, x, _ := proc.TestEdit()
+		//fmt.Println()
 		resultList, err := proc.RewriteConfigValue(cfg, targetPattern, "HostName", hostName)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		fmt.Println(resultList)
+
+		fmt.Printf("Searching for entries matching the host '%s'...\n", targetPattern)
 
 		// if resultList is not empty, write to file
 		if len(resultList) > 0 {
+			fmt.Printf("Found %d entries\n", len(resultList))
+			for i, result := range resultList {
+				fmt.Printf("[%d] Host: %s\n", i+1, result.HostPatterns)
+				fmt.Printf("[%d] Hostname is rewrited: %s -> %s (ln: %d)\n",
+					i+1, result.PreviousValue, result.CurrentValue, result.LineNo)
+			}
 			utils.WriteConfigFile(filePath, cfg.String())
+		} else {
+			fmt.Printf("No entries found matching the host '%s'. Check target pattern and your config file.\n", targetPattern)
 		}
-
-		fmt.Println("hostName called", filePath, targetPattern, hostName)
 	},
 }
 
 func init() {
 	editCmd.AddCommand(hostNameCmd)
-	hostNameCmd.Flags().StringP("hostname", "n", "", "Host name (ip address) for rewriting config")
+	hostNameCmd.Flags().StringP("hostname", "n", "", "HostName (ip address) for rewriting config")
 }
