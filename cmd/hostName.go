@@ -18,8 +18,16 @@ import (
 var hostNameCmd = &cobra.Command{
 	Use:   "hostName",
 	Short: "Edit ssh_config value 'HostName' of designated Host",
-	Long: `This subcommand edits the value of HostName for the host specified in the parent command.
-	ssh-conf-cli edit -T <YourSpecifiedHost> hostName -n <aaa.bbb.ccc.ddd>`,
+	Long: `
+	This subcommand edits the value of HostName for the host specified in the parent command.
+
+	Default ssh_config file path is ~/.ssh/config (linux and Mac) or %USERPROFILE%\.ssh\config (Windows).
+	If you want to designate another file, use -f option.
+	`,
+	Example: `
+	# Example for editting HostName of Host 'example.com' to 'aaa.bbb.ccc.ddd': 
+	$ ssh-conf-cli edit -T example.com hostName -n aaa.bbb.ccc.ddd
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		fmt.Println("HostName rewriting...")
