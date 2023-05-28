@@ -20,6 +20,7 @@ env:
   PROC_NAME: action-tester
   WIN_BUILD_NAME: win_x64
   LINUX_BUILD_NAME: linux_amd64
+  BUILD_OPTION: -ldflags '-s -w' -trimpath
 
 jobs:
   update_release_draft:
@@ -51,21 +52,21 @@ jobs:
   
       - name: Build for Windows
         run: |
-          GOOS=windows GOARCH=amd64 go build -v -o bin/${{ env.WIN_BUILD_NAME }}/${{ env.PROC_NAME }}.exe ./...
+          GOOS=windows GOARCH=amd64 go build -v ${{ env.BUILD_OPTION }}} -o bin/${{ env.WIN_BUILD_NAME }}/ ./...
 
       - name: Build for Linux
         run: |
-          GOOS=linux GOARCH=amd64 go build -v -o bin/${{ env.WIN_BUILD_NAME }}/${{ env.PROC_NAME }} ./... 
+          GOOS=linux GOARCH=amd64 go build -v ${{ env.BUILD_OPTION }}} -o bin/${{ env.WIN_BUILD_NAME }}/ ./... 
 
       - name: Zip for Windows
         working-directory: ./bin/${{ env.WIN_BUILD_NAME }}
         run: |
-          zip -r ${{ env.PROC_NAME }}_${{ env.WIN_BUILD_NAME }}.zip ${{ env.PROC_NAME }}.exe
+          zip -r ${{ env.PROC_NAME }}_${{ env.WIN_BUILD_NAME }}.zip ./*
 
       - name: Zip for Linux
         working-directory: ./bin/${{ env.LINUX_BUILD_NAME }}
         run: |
-          zip -r ${{ env.PROC_NAME }}_${{ env.LINUX_BUILD_NAME }}.zip ${{ env.PROC_NAME }}
+          zip -r ${{ env.PROC_NAME }}_${{ env.LINUX_BUILD_NAME }}.zip ./*
   
       - name: Upload Release Asset for Windows
         uses: shogo82148/actions-upload-release-asset@v1
