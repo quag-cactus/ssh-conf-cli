@@ -52,11 +52,11 @@ jobs:
   
       - name: Build for Windows
         run: |
-          GOOS=windows GOARCH=amd64 go build -v ${{ env.BUILD_OPTION }}} -o bin/${{ env.WIN_BUILD_NAME }}/ ./...
+          GOOS=windows GOARCH=amd64 go build -v ${{ env.BUILD_OPTION }} -o bin/${{ env.WIN_BUILD_NAME }}/ ./...
 
       - name: Build for Linux
         run: |
-          GOOS=linux GOARCH=amd64 go build -v ${{ env.BUILD_OPTION }}} -o bin/${{ env.WIN_BUILD_NAME }}/ ./... 
+          GOOS=linux GOARCH=amd64 go build -v ${{ env.BUILD_OPTION }} -o bin/${{ env.WIN_BUILD_NAME }}/ ./... 
 
       - name: Zip for Windows
         working-directory: ./bin/${{ env.WIN_BUILD_NAME }}
