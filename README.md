@@ -5,11 +5,13 @@ Cross-Platform Command Line Interface for editing ssh config file.
 
 1. You can download the binary file from [release page](https://github.com/quag-cactus/ssh-conf-cli/releases)
 
-2. Unzip the file and put it in your `$PATH` directory as needed.
-    ```bash
-    # linux
-    $ unzip ssh-conf-cli_linux_amd64.zip -d ~/.local/bin
-    ```
+2. Unzip the file (`ssh-conf-cli_linux_amd64_<versions>.zip`) and put it in your `$PATH` directory as needed.
+    * For linux
+        ```bash
+        $ unzip ssh-conf-cli_linux_amd64.zip -d ~/.local/bin
+        ```
+    * For Windows
+        Unzip the file (`ssh-conf-cli_win_amd64_<versions>.zip`) using your favorite unzip tool and put the file `ssh-conf-cli.exe` in your `$PATH` directory.
 
 ## Usage
 
