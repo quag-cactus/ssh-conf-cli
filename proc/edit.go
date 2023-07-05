@@ -49,7 +49,8 @@ func RewriteConfigValue(cfg *ssh_config.Config, targetPtn string, targetKeyName 
 						// rewriting
 						previousHostName := kv.Value
 						kv.Value = inputValue
-						kv.Comment = "This value was rewritten by ssh-conf-cli"
+						// A inline comment causes error of openssh client on linux
+						//kv.Comment = "This value was rewritten by ssh-conf-cli"
 
 						// add result-info to list
 						editResult := EditResult{[]string{}, previousHostName, kv.Value, kv.Pos().Line}
